@@ -36,12 +36,12 @@ export default function LoginPage() {
     <div className="flex min-h-screen bg-slate-50">
 
       {/* ── LEFT PANEL: About ── */}
-      <div className="hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900">
+      <div className="hidden lg:flex lg:w-[55%] flex-col relative overflow-hidden bg-white border-r border-slate-100">
         {/* Background pattern */}
-        <div className="absolute inset-0 opacity-10"
+        <div className="absolute inset-0 opacity-[0.03]"
           style={{
-            backgroundImage: `radial-gradient(circle at 25% 25%, white 1px, transparent 1px),
-                              radial-gradient(circle at 75% 75%, white 1px, transparent 1px)`,
+            backgroundImage: `radial-gradient(circle at 25% 25%, black 1px, transparent 1px),
+                              radial-gradient(circle at 75% 75%, black 1px, transparent 1px)`,
             backgroundSize: '60px 60px'
           }}
         />
@@ -49,59 +49,100 @@ export default function LoginPage() {
         <div className="relative z-10 flex flex-col h-full p-12">
           {/* Logos */}
           <div className="flex items-center gap-4 mb-auto">
-            <div className="h-14 w-14 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center overflow-hidden p-1.5 shrink-0">
+            <div className="h-14 w-14 rounded-2xl bg-white shadow-sm border border-slate-200 flex items-center justify-center overflow-hidden p-1.5 shrink-0">
               <Image src="/LOGO/LOGOSMP1DOMPU.png" alt="Logo SMP 1 Dompu" width={48} height={48} className="object-contain" />
             </div>
-            <div className="h-14 w-14 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center overflow-hidden p-1.5 shrink-0">
+            <div className="h-14 w-14 rounded-2xl bg-white shadow-sm border border-slate-200 flex items-center justify-center overflow-hidden p-1.5 shrink-0">
               <Image src="/LOGO/LOGOKKN.png" alt="Logo KKN" width={48} height={48} className="object-contain" />
             </div>
-            <div className="h-14 w-14 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center overflow-hidden p-1.5 shrink-0">
+            <div className="h-14 w-14 rounded-2xl bg-white shadow-sm border border-slate-200 flex items-center justify-center overflow-hidden p-1.5 shrink-0">
               <Image src="/LOGO/LOGOSTKIP.png" alt="Logo STKIP" width={48} height={48} className="object-contain" />
             </div>
           </div>
 
           {/* Main copy */}
-          <div className="mt-16 mb-10">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 mb-6">
-              <Shield className="h-3.5 w-3.5 text-indigo-300" />
-              <span className="text-xs font-semibold text-indigo-200 tracking-wider uppercase">Sistem Keuangan Digital</span>
+          <div className="mt-10 mb-8">
+            <div className="inline-flex items-center gap-2 rounded-full bg-indigo-50 border border-indigo-100 px-4 py-1.5 mb-6">
+              <Shield className="h-3.5 w-3.5 text-indigo-600" />
+              <span className="text-xs font-bold text-indigo-700 tracking-wider uppercase">Sistem Keuangan Digital</span>
             </div>
-            <h1 className="text-4xl font-black text-white leading-tight mb-4">
+            <h1 className="text-4xl font-black text-slate-800 leading-tight mb-4">
               Sistem Informasi<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-200">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-indigo-500">
                 Keuangan OSIS
               </span>
             </h1>
-            <p className="text-indigo-200 text-base leading-relaxed max-w-md">
+            <p className="text-slate-500 text-base leading-relaxed max-w-md">
               Platform digital untuk mengelola keuangan OSIS secara transparan, akurat, dan mudah diakses oleh seluruh pengurus.
             </p>
           </div>
 
           {/* Features */}
-          <div className="grid grid-cols-2 gap-3 mb-10">
+          <div className="grid grid-cols-2 gap-3 mb-8">
             {features.map(({ icon: Icon, label, desc }) => (
-              <div key={label} className="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 p-4 hover:bg-white/15 transition-all">
-                <div className="h-9 w-9 rounded-xl bg-white/15 flex items-center justify-center mb-3">
-                  <Icon className="h-4.5 w-4.5 text-white" />
+              <div key={label} className="rounded-2xl bg-slate-50 border border-slate-100 p-4 hover:border-indigo-100 transition-all">
+                <div className="h-9 w-9 rounded-xl bg-white shadow-sm flex items-center justify-center mb-3">
+                  <Icon className="h-4.5 w-4.5 text-indigo-600" />
                 </div>
-                <p className="text-sm font-bold text-white mb-0.5">{label}</p>
-                <p className="text-xs text-indigo-300 leading-snug">{desc}</p>
+                <p className="text-sm font-bold text-slate-800 mb-0.5">{label}</p>
+                <p className="text-xs text-slate-500 leading-snug">{desc}</p>
               </div>
             ))}
           </div>
 
           {/* About / Footer */}
-          <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
-            <p className="text-xs font-bold text-indigo-300 uppercase tracking-widest mb-2">Tentang Proyek</p>
-            <p className="text-sm text-white/80 leading-relaxed">
-              Aplikasi ini dikembangkan oleh <span className="font-bold text-white">Mahasiswa KKN STKIP Dompu</span> sebagai
-              wujud pengabdian kepada masyarakat di <span className="font-bold text-white">SMP Negeri 1 Dompu</span>.
-              Bertujuan memodernisasi pencatatan keuangan OSIS agar lebih transparan dan terorganisir.
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="text-sm font-black text-slate-800 tracking-wide mb-1 uppercase">Tim Pengembang</h3>
+            <p className="text-xs text-slate-500 mb-4">
+              Mahasiswa KKN STKIP YAPIS Dompu — SMP Negeri 1 Dompu
             </p>
-            <div className="mt-3 flex items-center gap-2 text-xs text-indigo-300">
-              <span>© {new Date().getFullYear()} KKN STKIP Dompu</span>
-              <span>·</span>
-              <span>SMPN 1 Dompu</span>
+            
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-1">
+                <span className="font-semibold text-slate-700">1. Sofi Novisa</span>
+                <span className="text-slate-400 font-mono">C789202301.043</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-slate-100 pb-1">
+                <span className="font-semibold text-slate-700">6. Faisal Ahmad B.</span>
+                <span className="text-slate-400 font-mono">C789202301.016</span>
+              </div>
+              
+              <div className="flex items-center justify-between border-b border-slate-100 pb-1">
+                <span className="font-semibold text-slate-700">2. Novi Julianti</span>
+                <span className="text-slate-400 font-mono">C78920230.110</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-slate-100 pb-1">
+                <span className="font-semibold text-slate-700">7. Nur Azizah</span>
+                <span className="text-slate-400 font-mono">C7432023001.008</span>
+              </div>
+
+              <div className="flex items-center justify-between border-b border-slate-100 pb-1">
+                <span className="font-semibold text-slate-700">3. Syamsiah H.</span>
+                <span className="text-slate-400 font-mono">C789202301053</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-slate-100 pb-1">
+                <span className="font-semibold text-slate-700">8. Baharudin</span>
+                <span className="text-slate-400 font-mono">-</span>
+              </div>
+
+              <div className="flex items-center justify-between border-b border-slate-100 pb-1">
+                <span className="font-semibold text-slate-700">4. Sohibun Farojin</span>
+                <span className="text-slate-400 font-mono">C789202301.102</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-slate-100 pb-1">
+                <span className="font-semibold text-slate-700">9. Arafat Setiawan</span>
+                <span className="text-slate-400 font-mono">C789202301.114</span>
+              </div>
+
+              <div className="flex items-center justify-between border-b border-slate-100 pb-1">
+                <span className="font-semibold text-slate-700">5. Iksan</span>
+                <span className="text-slate-400 font-mono">C789202301.054</span>
+              </div>
+            </div>
+            
+            <div className="mt-4 flex items-center justify-between text-[10px] text-slate-400 font-medium uppercase tracking-wider">
+              <span>© {new Date().getFullYear()} KKN STKIP YAPIS Dompu</span>
+              <span>Sistem OSIS v1.0</span>
             </div>
           </div>
         </div>
