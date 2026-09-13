@@ -38,6 +38,23 @@ export function formatDateShort(date: string | Date): string {
   return format(d, 'dd/MM/yyyy', { locale: id })
 }
 
+// Format date to local timezone WITA
+export function formatDateTimeWITA(date: string | Date): string {
+  const d = typeof date === 'string' ? new Date(date) : date
+  // e.g. "Rabu, 12 Sep 2026 14.30 WITA"
+  const formatted = new Intl.DateTimeFormat('id-ID', {
+    timeZone: 'Asia/Makassar',
+    weekday: 'long',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZoneName: 'short'
+  }).format(d)
+  return formatted.replace('.', ':') // Replace the dot in time with colon if preferred
+}
+
 // Generate transaction number: TRX-YYYYMMDD-XXX
 export function generateTransactionNumber(sequence: number): string {
   const today = format(new Date(), 'yyyyMMdd')
@@ -103,9 +120,9 @@ export function getInitials(name: string): string {
 
 // Indonesian class list
 export const CLASS_LIST = [
-  'VII A', 'VII B', 'VII C', 'VII D',
-  'VIII A', 'VIII B', 'VIII C', 'VIII D',
-  'IX A', 'IX B', 'IX C', 'IX D',
+  'VII A', 'VII B', 'VII C', 'VII D', 'VII E', 'VII F', 'VII G', 'VII H', 'VII I', 'VII J', 'VII K', 'VII L',
+  'VIII A', 'VIII B', 'VIII C', 'VIII D', 'VIII E', 'VIII F', 'VIII G', 'VIII H', 'VIII I', 'VIII J', 'VIII K', 'VIII L',
+  'IX A', 'IX B', 'IX C', 'IX D', 'IX E', 'IX F', 'IX G', 'IX H', 'IX I', 'IX J', 'IX K', 'IX L',
 ]
 
 // Payment methods

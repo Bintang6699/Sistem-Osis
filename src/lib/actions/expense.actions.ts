@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { getSession } from '@/lib/session'
 import { revalidatePath } from 'next/cache'
 import { format } from 'date-fns'
 
@@ -23,7 +24,6 @@ export async function getExpenseTransactions(params?: {
     .select(`
       *,
       categories(id, name, color),
-      profiles!expense_transactions_recorded_by_fkey(id, name),
       expense_items(*)
     `, { count: 'exact' })
     .order('expense_date', { ascending: false })
@@ -54,7 +54,6 @@ export async function getExpenseTransactionById(id: string) {
     .select(`
       *,
       categories(id, name, color),
-      profiles!expense_transactions_recorded_by_fkey(id, name),
       expense_items(*)
     `)
     .eq('id', id)
@@ -65,7 +64,7 @@ export async function getExpenseTransactionById(id: string) {
 }
 
 // Generate next transaction number
-async function generateTxNumber(supabase: ReturnType<Awaited<typeof import('@/lib/supabase/server').createClient>>): Promise<string> {
+async function generateTxNumber(supabase: Awaited<ReturnType<typeof createClient>>): Promise<string> {
   const today = format(new Date(), 'yyyyMMdd')
   const prefix = `TRX-${today}-`
 
@@ -95,7 +94,7 @@ export async function createExpenseTransaction(formData: {
   }>
 }) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await getSession()
 
   const transaction_number = await generateTxNumber(supabase)
 
@@ -114,7 +113,7 @@ export async function createExpenseTransaction(formData: {
       amount: totalAmount,
       paid_by: formData.paid_by,
       description: formData.description,
-      recorded_by: user?.id,
+      recorded_by: session?.id ?? null,
     })
     .select('id')
     .single()
@@ -200,6 +199,8 @@ export async function updateExpenseTransaction(
 
 export async function deleteExpenseTransaction(id: string) {
   const supabase = await createClient()
+
+  await supabase.from('expense_items').delete().eq('expense_transaction_id', id)
 
   const { error } = await supabase
     .from('expense_transactions')

@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -22,6 +23,11 @@ export function Modal({
   className,
 }: ModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     if (!isOpen) return
@@ -36,7 +42,7 @@ export function Modal({
     }
   }, [isOpen, onClose])
 
-  if (!isOpen) return null
+  if (!isOpen || !mounted) return null
 
   const sizeClasses = {
     sm: 'max-w-sm',
@@ -46,28 +52,66 @@ export function Modal({
     '2xl': 'max-w-2xl',
   }
 
-  return (
+  const modalContent = (
     <div
       ref={overlayRef}
-      className="modal-backdrop animate-fade-in"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9999, /* High z-index to stay on top of everything */
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem',
+        backgroundColor: 'rgba(0,0,0,0.15)', /* Memberikan sedikit kegelapan agar modal terlihat */
+        backdropFilter: 'blur(2px)', /* Efek blur halus di belakang form */
+      }}
       onClick={(e) => {
         if (e.target === overlayRef.current) onClose()
       }}
     >
       <div
-        className={cn(
-          'relative w-full rounded-2xl bg-white shadow-2xl shadow-slate-900/10',
-          sizeClasses[size],
-          className
-        )}
-        style={{ animation: 'fade-in 0.2s ease-out forwards' }}
+        className={cn('relative w-full', sizeClasses[size], className)}
+        style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '1rem',
+          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+          animation: 'modal-slide-up 0.22s cubic-bezier(0.16,1,0.3,1) forwards',
+          maxHeight: '90vh', /* Menjaga agar form tidak lebih besar dari viewport */
+          overflowY: 'auto'
+        }}
       >
         {title && (
-          <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-            <h2 className="text-base font-semibold text-slate-900">{title}</h2>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderBottom: '1px solid #f1f5f9',
+              padding: '1rem 1.5rem',
+              position: 'sticky',
+              top: 0,
+              backgroundColor: '#ffffff',
+              zIndex: 10,
+              borderTopLeftRadius: '1rem',
+              borderTopRightRadius: '1rem',
+            }}
+          >
+            <h2 style={{ fontSize: '1rem', fontWeight: 600, color: '#0f172a', margin: 0 }}>{title}</h2>
             <button
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '2rem',
+                height: '2rem',
+                borderRadius: '0.5rem',
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+                color: '#94a3b8',
+              }}
             >
               <X className="h-4 w-4" />
             </button>
@@ -76,7 +120,22 @@ export function Modal({
         {!title && (
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 z-10"
+            style={{
+              position: 'absolute',
+              top: '1rem',
+              right: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '2rem',
+              height: '2rem',
+              borderRadius: '0.5rem',
+              border: 'none',
+              background: 'transparent',
+              cursor: 'pointer',
+              color: '#94a3b8',
+              zIndex: 10,
+            }}
           >
             <X className="h-4 w-4" />
           </button>
@@ -85,4 +144,6 @@ export function Modal({
       </div>
     </div>
   )
+
+  return createPortal(modalContent, document.body)
 }

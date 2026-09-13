@@ -73,6 +73,10 @@ export async function updateMember(id: string, formData: {
 
 export async function deleteMember(id: string) {
   const supabase = await createClient()
+  
+  // Clear references first to prevent foreign key errors
+  await supabase.from('income_transactions').update({ member_id: null }).eq('member_id', id)
+  
   const { error } = await supabase.from('members').delete().eq('id', id)
   if (error) throw new Error(error.message)
   revalidatePath('/anggota')
@@ -112,4 +116,18 @@ export async function getMemberPaymentStatus(classFilter: string, period: string
     paidCount: statusList?.filter((m) => m.hasPaid).length ?? 0,
     unpaidCount: statusList?.filter((m) => !m.hasPaid).length ?? 0,
   }
+}
+
+export async function deleteAllMembers() {
+  const supabase = await createClient()
+
+  // Clear member_id FK references first
+  await supabase.from('income_transactions').update({ member_id: null }).neq('id', '00000000-0000-0000-0000-000000000000')
+
+  const { error } = await supabase.from('members').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+  if (error) throw new Error(error.message)
+
+  revalidatePath('/anggota')
+  revalidatePath('/dashboard')
+  return { success: true }
 }

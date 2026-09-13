@@ -148,3 +148,42 @@ export async function getCategories(type?: 'income' | 'expense') {
   if (error) throw new Error(error.message)
   return data ?? []
 }
+
+export async function createCategory(formData: { name: string; type: 'income' | 'expense'; color?: string }) {
+  const supabase = await createClient()
+  const { error } = await supabase.from('categories').insert(formData)
+  if (error) throw new Error(error.message)
+  return { success: true }
+}
+
+export async function updateCategory(id: string, formData: { name?: string; type?: 'income' | 'expense'; color?: string }) {
+  const supabase = await createClient()
+  const { error } = await supabase.from('categories').update(formData).eq('id', id)
+  if (error) throw new Error(error.message)
+  return { success: true }
+}
+
+export async function deleteCategory(id: string) {
+  const supabase = await createClient()
+  const { error } = await supabase.from('categories').delete().eq('id', id)
+  if (error) throw new Error(error.message)
+  return { success: true }
+}
+
+export async function resetAllTransactions() {
+  const supabase = await createClient()
+
+  // Delete expense items first (FK dependency)
+  const { error: itemErr } = await supabase.from('expense_items').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+  if (itemErr) throw new Error(itemErr.message)
+
+  const { error: expErr } = await supabase.from('expense_transactions').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+  if (expErr) throw new Error(expErr.message)
+
+  const { error: incErr } = await supabase.from('income_transactions').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+  if (incErr) throw new Error(incErr.message)
+
+  const { revalidatePath } = await import('next/cache')
+  revalidatePath('/', 'layout')
+  return { success: true }
+}

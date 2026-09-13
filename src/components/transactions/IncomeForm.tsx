@@ -15,6 +15,7 @@ interface IncomeFormProps {
   categories: Category[]
   editData?: {
     id: string
+    member_id?: string | null
     payer_name: string
     payer_class: string
     amount: number
@@ -34,7 +35,7 @@ export function IncomeForm({ isOpen, onClose, members, categories, editData }: I
   const [form, setForm] = useState({
     payer_name: '',
     payer_class: '',
-    amount: '',
+    amount: 0,
     payment_date: today,
     period: getMonthPeriodString(new Date()),
     payment_method: 'Tunai',
@@ -48,7 +49,7 @@ export function IncomeForm({ isOpen, onClose, members, categories, editData }: I
       setForm({
         payer_name: editData.payer_name,
         payer_class: editData.payer_class,
-        amount: String(editData.amount),
+        amount: editData.amount,
         payment_date: editData.payment_date,
         period: editData.period,
         payment_method: editData.payment_method,
@@ -56,11 +57,14 @@ export function IncomeForm({ isOpen, onClose, members, categories, editData }: I
         status: editData.status ?? 'Lunas',
         category_id: editData.category_id ?? '',
       })
+      if (editData.member_id) {
+        setSelectedMemberId(editData.member_id)
+      }
     } else {
       setForm({
         payer_name: '',
         payer_class: '',
-        amount: '',
+        amount: 0,
         payment_date: today,
         period: getMonthPeriodString(new Date()),
         payment_method: 'Tunai',
@@ -90,7 +94,7 @@ export function IncomeForm({ isOpen, onClose, members, categories, editData }: I
       toast.error('Lengkapi semua kolom wajib')
       return
     }
-    const amount = parseFloat(form.amount.replace(/[^0-9.]/g, ''))
+    const amount = typeof form.amount === 'number' ? form.amount : parseFloat(String(form.amount).replace(/[^0-9.]/g, ''))
     if (isNaN(amount) || amount <= 0) {
       toast.error('Nominal harus lebih dari 0')
       return
@@ -146,14 +150,15 @@ export function IncomeForm({ isOpen, onClose, members, categories, editData }: I
         {/* Member select */}
         <div>
           <label className="mb-1 block text-xs font-medium text-slate-600">
-            Pilih Anggota (opsional)
+            Pilih Siswa / Anggota <span className="text-red-400">*</span>
           </label>
           <select
             value={selectedMemberId}
             onChange={(e) => handleMemberSelect(e.target.value)}
             className="input-base"
+            required
           >
-            <option value="">-- Pilih dari daftar anggota --</option>
+            <option value="" disabled>-- Pilih Siswa --</option>
             {members.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.name} — {m.class}
@@ -162,140 +167,39 @@ export function IncomeForm({ isOpen, onClose, members, categories, editData }: I
           </select>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {/* Name */}
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">
-              Nama Pembayar <span className="text-red-400">*</span>
-            </label>
+        {/* Amount */}
+        <div>
+          <label className="mb-1 block text-xs font-medium text-slate-600">
+            Nominal Uang <span className="text-red-400">*</span>
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400 select-none">Rp</span>
             <input
               type="text"
-              value={form.payer_name}
-              onChange={(e) => setForm((f) => ({ ...f, payer_name: e.target.value }))}
-              placeholder="Nama lengkap"
+              inputMode="numeric"
+              value={form.amount === 0 ? '' : String(form.amount).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/\./g, '').replace(/[^0-9]/g, '')
+                setForm((f) => ({ ...f, amount: raw === '' ? 0 : Number(raw) }))
+              }}
+              placeholder="0"
               required
-              className="input-base"
+              className="input-base pl-9 font-semibold"
             />
-          </div>
-
-          {/* Class */}
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">
-              Kelas <span className="text-red-400">*</span>
-            </label>
-            <select
-              value={form.payer_class}
-              onChange={(e) => setForm((f) => ({ ...f, payer_class: e.target.value }))}
-              required
-              className="input-base"
-            >
-              <option value="">Pilih kelas</option>
-              {CLASS_LIST.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Amount */}
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">
-              Nominal <span className="text-red-400">*</span>
-            </label>
-            <input
-              type="number"
-              value={form.amount}
-              onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
-              placeholder="10000"
-              min={1}
-              required
-              className="input-base"
-            />
-          </div>
-
-          {/* Date */}
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">
-              Tanggal Bayar <span className="text-red-400">*</span>
-            </label>
-            <input
-              type="date"
-              value={form.payment_date}
-              onChange={(e) => handleDateChange(e.target.value)}
-              required
-              className="input-base"
-            />
-          </div>
-
-          {/* Period */}
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">
-              Periode <span className="text-red-400">*</span>
-            </label>
-            <input
-              type="text"
-              value={form.period}
-              onChange={(e) => setForm((f) => ({ ...f, period: e.target.value }))}
-              placeholder="September 2026"
-              required
-              className="input-base"
-            />
-          </div>
-
-          {/* Payment Method */}
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">
-              Metode Pembayaran
-            </label>
-            <select
-              value={form.payment_method}
-              onChange={(e) => setForm((f) => ({ ...f, payment_method: e.target.value }))}
-              className="input-base"
-            >
-              {PAYMENT_METHODS.map((m) => (
-                <option key={m} value={m}>{m}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Status */}
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Status</label>
-            <select
-              value={form.status}
-              onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))}
-              className="input-base"
-            >
-              <option value="Lunas">Lunas</option>
-              <option value="Cicilan">Cicilan</option>
-              <option value="Pending">Pending</option>
-            </select>
-          </div>
-
-          {/* Category */}
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Kategori</label>
-            <select
-              value={form.category_id}
-              onChange={(e) => setForm((f) => ({ ...f, category_id: e.target.value }))}
-              className="input-base"
-            >
-              <option value="">Pilih kategori</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
           </div>
         </div>
 
-        {/* Description */}
+        {/* Date */}
         <div>
-          <label className="mb-1 block text-xs font-medium text-slate-600">Keterangan</label>
-          <textarea
-            value={form.description}
-            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            placeholder="Keterangan tambahan (opsional)"
-            rows={2}
-            className="input-base resize-none"
+          <label className="mb-1 block text-xs font-medium text-slate-600">
+            Tanggal <span className="text-red-400">*</span>
+          </label>
+          <input
+            type="date"
+            value={form.payment_date}
+            onChange={(e) => handleDateChange(e.target.value)}
+            required
+            className="input-base"
           />
         </div>
 

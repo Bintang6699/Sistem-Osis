@@ -269,13 +269,20 @@ export function ExpenseForm({ isOpen, onClose, categories, editData }: ExpenseFo
                       />
                     </td>
                     <td className="px-2 py-2">
-                      <input
-                        type="number"
-                        value={item.unit_price}
-                        onChange={(e) => updateItem(idx, 'unit_price', Number(e.target.value))}
-                        min={0}
-                        className="input-base py-1.5 text-xs"
-                      />
+                      <div className="relative">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 select-none">Rp</span>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          value={item.unit_price === 0 ? '' : String(item.unit_price).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+                          onChange={(e) => {
+                            const raw = e.target.value.replace(/\./g, '').replace(/[^0-9]/g, '')
+                            updateItem(idx, 'unit_price', raw === '' ? 0 : Number(raw))
+                          }}
+                          placeholder="0"
+                          className="input-base py-1.5 pl-7 text-xs font-semibold"
+                        />
+                      </div>
                     </td>
                     <td className="px-3 py-2 text-right text-xs font-medium text-slate-900">
                       {formatRupiah(item.quantity * item.unit_price)}

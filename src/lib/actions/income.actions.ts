@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { getSession } from '@/lib/session'
 import { revalidatePath } from 'next/cache'
 
 export async function getIncomeTransactions(params?: {
@@ -23,7 +24,6 @@ export async function getIncomeTransactions(params?: {
     .select(`
       *,
       members(id, name, class),
-      profiles!income_transactions_recorded_by_fkey(id, name),
       categories(id, name, color)
     `, { count: 'exact' })
     .order('payment_date', { ascending: false })
@@ -64,11 +64,11 @@ export async function createIncomeTransaction(formData: {
   category_id?: string
 }) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await getSession()
 
   const { error } = await supabase.from('income_transactions').insert({
     ...formData,
-    recorded_by: user?.id,
+    recorded_by: session?.id ?? null,
   })
 
   if (error) throw new Error(error.message)
@@ -120,7 +120,6 @@ export async function deleteIncomeTransaction(id: string) {
   return { success: true }
 }
 
-// Get income summary stats
 export async function getIncomeStats(dateFrom?: string, dateTo?: string) {
   const supabase = await createClient()
 

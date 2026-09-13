@@ -157,7 +157,7 @@ CREATE POLICY "Admin can manage all profiles" ON public.profiles
 CREATE POLICY "Members viewable by all authenticated" ON public.members
   FOR SELECT USING (auth.role() = 'authenticated');
 CREATE POLICY "Admin and bendahara can manage members" ON public.members
-  FOR INSERT USING (public.get_my_role() IN ('admin', 'bendahara'));
+  FOR INSERT WITH CHECK (public.get_my_role() IN ('admin', 'bendahara'));
 CREATE POLICY "Admin and bendahara can update members" ON public.members
   FOR UPDATE USING (public.get_my_role() IN ('admin', 'bendahara'));
 CREATE POLICY "Only admin can delete members" ON public.members
@@ -167,7 +167,7 @@ CREATE POLICY "Only admin can delete members" ON public.members
 CREATE POLICY "Categories viewable by all authenticated" ON public.categories
   FOR SELECT USING (auth.role() = 'authenticated');
 CREATE POLICY "Admin and bendahara can manage categories" ON public.categories
-  FOR INSERT USING (public.get_my_role() IN ('admin', 'bendahara'));
+  FOR INSERT WITH CHECK (public.get_my_role() IN ('admin', 'bendahara'));
 CREATE POLICY "Admin and bendahara can update categories" ON public.categories
   FOR UPDATE USING (public.get_my_role() IN ('admin', 'bendahara'));
 CREATE POLICY "Only admin can delete categories" ON public.categories

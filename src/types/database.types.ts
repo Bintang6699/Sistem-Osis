@@ -45,6 +45,8 @@ export interface Database {
           class: string
           status: 'Aktif' | 'Tidak Aktif' | 'Alumni'
           phone: string | null
+          jabatan: string | null
+          tipe_keanggotaan: string | null
           created_at: string
           updated_at: string
         }
@@ -55,6 +57,8 @@ export interface Database {
           class: string
           status?: 'Aktif' | 'Tidak Aktif' | 'Alumni'
           phone?: string | null
+          jabatan?: string | null
+          tipe_keanggotaan?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -65,6 +69,8 @@ export interface Database {
           class?: string
           status?: 'Aktif' | 'Tidak Aktif' | 'Alumni'
           phone?: string | null
+          jabatan?: string | null
+          tipe_keanggotaan?: string | null
           updated_at?: string
         }
       }
